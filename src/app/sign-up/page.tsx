@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, User, Mail, Lock, Phone, ArrowRight, Loader2, Check, AlertCircle } from "lucide-react";
+import { Sparkles, User, Mail, Lock, Phone, ArrowRight, Loader2, Check, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { ImageUpload } from "@/components/ImageUpload";
+import { evaluatePasswordStrength } from "@/lib/passwordStrength";
 import toast from "react-hot-toast";
 
 export default function SignUpPage() {
@@ -15,6 +16,7 @@ export default function SignUpPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -24,6 +26,7 @@ export default function SignUpPage() {
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const isPasswordValid = hasMinLength && hasUppercase && hasLowercase;
+  const passwordStrength = evaluatePasswordStrength(password);
 
   useEffect(() => {
     if (user) {
@@ -140,14 +143,39 @@ export default function SignUpPage() {
               <Lock className="w-3.5 h-3.5 text-salon-blush" />
               Create Password
             </label>
-            <input
-              type="password"
-              required
-              placeholder="Minimum 6 characters with upper and lower case"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-salon-border bg-salon-bg text-xs text-salon-charcoal focus:outline-none focus:border-salon-blush transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder="Minimum 6 characters with upper and lower case"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-salon-border bg-salon-bg text-xs text-salon-charcoal focus:outline-none focus:border-salon-blush transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-salon-muted hover:text-salon-charcoal"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Password strength meter */}
+            {password && (
+              <div className="mt-2 space-y-1">
+                <div className="flex items-center justify-between text-[10px] text-salon-muted">
+                  <span>Strength: {passwordStrength.label}</span>
+                  <span>{passwordStrength.score}/4</span>
+                </div>
+                <div className="w-full bg-salon-border h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${passwordStrength.color} transition-all duration-300`}
+                    style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
 
             {/* Password Validation checklist */}
             <div className="mt-2 space-y-1 text-[11px] text-salon-muted">
