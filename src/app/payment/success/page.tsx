@@ -7,6 +7,7 @@ import { CheckCircle2, Calendar, Clock, ArrowRight, ShieldCheck, CreditCard } fr
 import { api } from "@/lib/api";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { copyToClipboard } from "@/lib/clipboard";
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
@@ -106,9 +107,14 @@ function PaymentSuccessContent() {
             {/* Transaction Reference */}
             <div className="pt-2 border-t border-salon-border/60 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-salon-muted gap-1">
               <span>Stripe Reference ID:</span>
-              <span className="font-mono text-salon-charcoal truncate max-w-xs">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(transaction?.stripeSessionId || sessionId || "", "Reference ID copied!")}
+                className="font-mono text-salon-charcoal hover:text-salon-blush truncate max-w-xs text-left"
+                title="Click to copy"
+              >
                 {transaction?.stripeSessionId || sessionId || "Verified via Stripe"}
-              </span>
+              </button>
             </div>
           </div>
         )}
