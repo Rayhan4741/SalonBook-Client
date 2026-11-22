@@ -66,7 +66,7 @@ function CustomerDashboardContent() {
     try {
       setLoadingData(true);
       const [dashRes, apptRes] = await Promise.all([
-        api.get("/api/customer/dashboard"),
+        api.get("/api/dashboard/customer"),
         api.get("/api/appointments/my"),
       ]);
 
