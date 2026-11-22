@@ -19,6 +19,8 @@ import { formatPrice } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { BookingModal } from "@/components/BookingModal";
 import { ServiceItem } from "@/components/ServiceCard";
+import { shareLink } from "@/lib/share";
+import toast from "react-hot-toast";
 
 export default function ServiceDetailsPage() {
   const params = useParams();
@@ -89,8 +91,8 @@ export default function ServiceDetailsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Back Breadcrumb */}
-      <div className="mb-8">
+      {/* Back Breadcrumb & Share */}
+      <div className="mb-8 flex items-center justify-between">
         <Link
           href="/services"
           className="inline-flex items-center gap-2 text-xs font-semibold text-salon-muted hover:text-salon-blush transition-colors"
@@ -98,6 +100,17 @@ export default function ServiceDetailsPage() {
           <ArrowLeft className="w-4 h-4" />
           <span>Return to All Services</span>
         </Link>
+
+        <button
+          type="button"
+          onClick={async () => {
+            const shared = await shareLink(service.serviceName, service.description, window.location.href);
+            if (shared) toast.success("Treatment link copied or shared!");
+          }}
+          className="px-3 py-1.5 rounded-xl border border-salon-border text-xs font-semibold text-salon-charcoal hover:bg-salon-card transition-colors"
+        >
+          Share Treatment
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
