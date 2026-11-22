@@ -210,14 +210,20 @@ export default function ServiceDetailsPage() {
                   </div>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsBookingOpen(true)}
-                  className="w-full py-4 px-6 rounded-full text-xs font-semibold text-white bg-salon-blush hover:bg-salon-blushHover shadow-card hover:shadow-hover transition-all flex items-center justify-center gap-2"
-                >
-                  <CalendarCheck2 className="w-4 h-4" />
-                  <span>Book Appointment Now</span>
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsBookingOpen(true)}
+                    className="w-full py-4 px-6 rounded-full text-xs font-semibold text-white bg-salon-blush hover:bg-salon-blushHover shadow-card hover:shadow-hover transition-all flex items-center justify-center gap-2"
+                  >
+                    <CalendarCheck2 className="w-4 h-4" />
+                    <span>Book Appointment Now</span>
+                  </button>
+                  <div className="flex items-center justify-center gap-2 text-[11px] text-salon-muted pt-1">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>Book online now • Pay securely via <strong className="text-salon-charcoal">Stripe Checkout</strong> after confirmation</span>
+                  </div>
+                </>
               )}
             </div>
           </div>

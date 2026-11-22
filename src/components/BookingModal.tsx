@@ -231,6 +231,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               )}
             </button>
           </div>
+
+          {/* Stripe Security Notice */}
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-salon-muted pt-2 border-t border-salon-border/50">
+            <CreditCard className="w-3.5 h-3.5 text-[#635BFF]" />
+            <span>Secure payment via <strong className="text-salon-charcoal">Stripe Checkout</strong> upon concierge confirmation</span>
+          </div>
         </form>
       </div>
     </div>

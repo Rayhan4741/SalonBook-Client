@@ -35,6 +35,7 @@ function CustomerDashboardContent() {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [stats, setStats] = useState({ total: 0, pending: 0, confirmed: 0, cancelled: 0 });
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [payingAppointmentId, setPayingAppointmentId] = useState<string | null>(null);
 
@@ -65,9 +66,10 @@ function CustomerDashboardContent() {
   const loadCustomerData = useCallback(async () => {
     try {
       setLoadingData(true);
-      const [dashRes, apptRes] = await Promise.all([
+      const [dashRes, apptRes, txRes] = await Promise.all([
         api.get("/api/dashboard/customer"),
         api.get("/api/appointments/my"),
+        api.get("/api/payments/my-transactions").catch(() => ({ data: { success: true, data: [] } })),
       ]);
 
       if (dashRes.data?.success) {
@@ -76,6 +78,10 @@ function CustomerDashboardContent() {
 
       if (apptRes.data?.success) {
         setAppointments(apptRes.data.data || []);
+      }
+
+      if (txRes.data?.success) {
+        setTransactions(txRes.data.data || []);
       }
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to load dashboard data.");
@@ -220,6 +226,23 @@ function CustomerDashboardContent() {
             </button>
 
             <button
+              onClick={() => setActiveTab("payments")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all ${
+                activeTab === "payments"
+                  ? "bg-salon-blush text-white shadow-sm"
+                  : "text-salon-charcoal hover:bg-salon-bg"
+              }`}
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Payment History</span>
+              {transactions.length > 0 && (
+                <span className="ml-auto px-2 py-0.5 text-[10px] rounded-full bg-blue-100 text-blue-800 font-bold">
+                  {transactions.length}
+                </span>
+              )}
+            </button>
+
+            <button
               onClick={() => setActiveTab("profile")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === "profile"
@@ -239,30 +262,37 @@ function CustomerDashboardContent() {
           {activeTab === "overview" && (
             <div className="space-y-8">
               {/* Stat Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="bg-salon-card p-5 rounded-2xl border border-salon-border shadow-soft">
-                  <p className="text-xs text-salon-muted font-medium">Total Bookings</p>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <div className="bg-salon-card p-4 rounded-2xl border border-salon-border shadow-soft">
+                  <p className="text-[11px] text-salon-muted font-medium">Total Bookings</p>
                   <p className="font-serif text-2xl font-bold text-salon-charcoal mt-1">
                     {stats.total}
                   </p>
                 </div>
 
-                <div className="bg-salon-card p-5 rounded-2xl border border-salon-border shadow-soft">
-                  <p className="text-xs text-amber-700 font-medium">Pending</p>
+                <div className="bg-salon-card p-4 rounded-2xl border border-salon-border shadow-soft">
+                  <p className="text-[11px] text-amber-700 font-medium">Pending</p>
                   <p className="font-serif text-2xl font-bold text-amber-600 mt-1">
                     {stats.pending}
                   </p>
                 </div>
 
-                <div className="bg-salon-card p-5 rounded-2xl border border-salon-border shadow-soft">
-                  <p className="text-xs text-emerald-700 font-medium">Confirmed</p>
+                <div className="bg-salon-card p-4 rounded-2xl border border-salon-border shadow-soft">
+                  <p className="text-[11px] text-emerald-700 font-medium">Confirmed</p>
                   <p className="font-serif text-2xl font-bold text-emerald-600 mt-1">
                     {stats.confirmed}
                   </p>
                 </div>
 
-                <div className="bg-salon-card p-5 rounded-2xl border border-salon-border shadow-soft">
-                  <p className="text-xs text-stone-500 font-medium">Cancelled</p>
+                <div className="bg-salon-card p-4 rounded-2xl border border-salon-border shadow-soft">
+                  <p className="text-[11px] text-[#635BFF] font-medium">Paid (Stripe)</p>
+                  <p className="font-serif text-2xl font-bold text-[#635BFF] mt-1">
+                    {appointments.filter((a) => a.paymentStatus === "paid").length}
+                  </p>
+                </div>
+
+                <div className="bg-salon-card p-4 rounded-2xl border border-salon-border shadow-soft">
+                  <p className="text-[11px] text-stone-500 font-medium">Cancelled</p>
                   <p className="font-serif text-2xl font-bold text-stone-500 mt-1">
                     {stats.cancelled}
                   </p>
@@ -361,6 +391,26 @@ function CustomerDashboardContent() {
                 </span>
               </div>
 
+              {/* Stripe Payment Integration Info Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-purple-50/40 border border-blue-200/70 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#635BFF]/15 text-[#635BFF] flex items-center justify-center shrink-0 shadow-sm">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-salon-charcoal text-xs">Secure Stripe Checkout</h4>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#635BFF]/10 text-[#635BFF] border border-[#635BFF]/20">
+                        256-bit Encrypted
+                      </span>
+                    </div>
+                    <p className="text-salon-muted text-[11px] mt-0.5">
+                      Once salon concierge confirms your pending request, the <strong>"Pay with Stripe"</strong> button activates for instant payment.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {appointments.length === 0 ? (
                 <EmptyState
                   title="No Appointments Scheduled"
@@ -453,8 +503,8 @@ function CustomerDashboardContent() {
                             {/* Cancel Pending appointment only */}
                             {isPending && (
                               <div className="flex items-center gap-2">
-                                <span className="text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200">
-                                  Awaiting Salon Confirmation to Pay
+                                <span className="text-[11px] text-amber-800 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200">
+                                  Awaiting Confirmation (Stripe pay activates upon approval)
                                 </span>
                                 <button
                                   onClick={() => handleCancelAppointment(appt._id)}
@@ -471,7 +521,7 @@ function CustomerDashboardContent() {
                               <button
                                 onClick={() => handlePayNow(appt._id)}
                                 disabled={payingAppointmentId === appt._id}
-                                className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5 animate-pulse"
+                                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#635BFF] hover:bg-[#5349e0] shadow-md hover:shadow-lg transition-all flex items-center gap-1.5"
                                 title="Pay securely with Stripe Checkout"
                               >
                                 {payingAppointmentId === appt._id ? (
@@ -479,15 +529,15 @@ function CustomerDashboardContent() {
                                 ) : (
                                   <CreditCard className="w-3.5 h-3.5" />
                                 )}
-                                <span>Pay Now (Stripe)</span>
+                                <span>Pay {formatPrice(appt.servicePrice)} via Stripe</span>
                               </button>
                             )}
 
                             {isPaid && (
                               <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 flex items-center gap-1">
                                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                                  <span>Paid</span>
+                                  <span>Paid via Stripe</span>
                                 </span>
                                 <button
                                   type="button"
@@ -586,6 +636,90 @@ function CustomerDashboardContent() {
                   </button>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* TAB 4: PAYMENT HISTORY (STRIPE) */}
+          {activeTab === "payments" && (
+            <div className="bg-salon-card rounded-2xl border border-salon-border p-6 shadow-soft space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-salon-border pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-serif text-xl font-bold text-salon-charcoal">
+                      Payment & Transaction History
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#635BFF]/10 text-[#635BFF] border border-[#635BFF]/20 flex items-center gap-1">
+                      <CreditCard className="w-3 h-3" />
+                      <span>Stripe Checkout Verified</span>
+                    </span>
+                  </div>
+                  <p className="text-xs text-salon-muted font-sans mt-0.5">
+                    Official records of all your processed payments and treatment receipts.
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-salon-muted">
+                  Total Transactions: {transactions.length}
+                </span>
+              </div>
+
+              {transactions.length === 0 ? (
+                <EmptyState
+                  title="No Stripe Transactions Recorded"
+                  description="When you complete payment for your confirmed appointments through Stripe Checkout, your official receipt records will appear here."
+                  actionText="View Appointments"
+                  actionHref="#appointments"
+                />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-salon-border text-salon-muted uppercase tracking-wider text-[10px]">
+                        <th className="pb-3 font-semibold">Treatment</th>
+                        <th className="pb-3 font-semibold">Amount</th>
+                        <th className="pb-3 font-semibold">Gateway</th>
+                        <th className="pb-3 font-semibold">Payment Status</th>
+                        <th className="pb-3 font-semibold">Transaction Date</th>
+                        <th className="pb-3 font-semibold text-right">Receipt</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-salon-border">
+                      {transactions.map((tx) => (
+                        <tr key={tx._id} className="hover:bg-salon-bg/40 transition-colors">
+                          <td className="py-3.5 font-bold text-salon-charcoal">
+                            {tx.appointmentId?.serviceId?.serviceName || "Salon Treatment"}
+                          </td>
+                          <td className="py-3.5 font-serif font-bold text-salon-charcoal text-sm">
+                            {formatPrice(tx.amount)}
+                          </td>
+                          <td className="py-3.5">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#635BFF]/10 text-[#635BFF] border border-[#635BFF]/20">
+                              <CreditCard className="w-3 h-3" />
+                              <span>Stripe Checkout</span>
+                            </span>
+                          </td>
+                          <td className="py-3.5">
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
+                              {tx.status}
+                            </span>
+                          </td>
+                          <td className="py-3.5 text-salon-muted">
+                            {formatDate(tx.createdAt)}
+                          </td>
+                          <td className="py-3.5 text-right">
+                            <button
+                              type="button"
+                              onClick={() => printAppointmentReceipt(tx.appointmentId || tx)}
+                              className="px-3 py-1 rounded-lg border border-salon-border text-salon-charcoal hover:bg-salon-card font-semibold text-xs transition-colors"
+                            >
+                              Print
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
