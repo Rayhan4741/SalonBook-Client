@@ -29,6 +29,7 @@ import { formatPrice, formatDate } from "@/lib/utils";
 import { ImageUpload } from "@/components/ImageUpload";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { EmptyState } from "@/components/EmptyState";
+import { exportTransactionsToCsv } from "@/lib/exportCsv";
 import toast from "react-hot-toast";
 
 const SERVICE_CATEGORIES = [
@@ -837,13 +838,24 @@ function AdminDashboardContent() {
           {/* TAB 5: TRANSACTIONS */}
           {activeTab === "transactions" && (
             <div className="bg-salon-card rounded-2xl border border-salon-border p-6 shadow-soft space-y-6">
-              <div>
-                <h3 className="font-serif text-xl font-bold text-salon-charcoal">
-                  Payment Ledger (Stripe Verified)
-                </h3>
-                <p className="text-xs text-salon-muted">
-                  Immutable record of payments processed via Stripe Checkout and verified by Webhooks.
-                </p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-xl font-bold text-salon-charcoal">
+                    Payment Ledger (Stripe Verified)
+                  </h3>
+                  <p className="text-xs text-salon-muted">
+                    Immutable record of payments processed via Stripe Checkout and verified by Webhooks.
+                  </p>
+                </div>
+                {transactions.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => exportTransactionsToCsv(transactions)}
+                    className="px-3.5 py-1.5 rounded-xl border border-salon-border text-xs font-semibold text-salon-charcoal hover:bg-salon-bg flex items-center gap-1.5 transition-colors shrink-0"
+                  >
+                    <span>Export CSV</span>
+                  </button>
+                )}
               </div>
 
               {transactions.length === 0 ? (
