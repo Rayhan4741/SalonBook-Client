@@ -452,13 +452,18 @@ function CustomerDashboardContent() {
 
                             {/* Cancel Pending appointment only */}
                             {isPending && (
-                              <button
-                                onClick={() => handleCancelAppointment(appt._id)}
-                                className="px-3 py-1.5 rounded-xl border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1"
-                              >
-                                <XCircle className="w-3.5 h-3.5" />
-                                <span>Cancel</span>
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200">
+                                  Awaiting Salon Confirmation to Pay
+                                </span>
+                                <button
+                                  onClick={() => handleCancelAppointment(appt._id)}
+                                  className="px-3 py-1.5 rounded-xl border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1"
+                                >
+                                  <XCircle className="w-3.5 h-3.5" />
+                                  <span>Cancel</span>
+                                </button>
+                              </div>
                             )}
 
                             {/* Pay Now for confirmed and unpaid only */}
@@ -466,14 +471,15 @@ function CustomerDashboardContent() {
                               <button
                                 onClick={() => handlePayNow(appt._id)}
                                 disabled={payingAppointmentId === appt._id}
-                                className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-salon-blush hover:bg-salon-blushHover shadow-sm transition-all flex items-center gap-1.5"
+                                className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-1.5 animate-pulse"
+                                title="Pay securely with Stripe Checkout"
                               >
                                 {payingAppointmentId === appt._id ? (
                                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                 ) : (
                                   <CreditCard className="w-3.5 h-3.5" />
                                 )}
-                                <span>Pay Now</span>
+                                <span>Pay Now (Stripe)</span>
                               </button>
                             )}
 
