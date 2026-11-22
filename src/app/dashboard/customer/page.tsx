@@ -23,6 +23,7 @@ import { formatPrice, formatDate } from "@/lib/utils";
 import { ImageUpload } from "@/components/ImageUpload";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { EmptyState } from "@/components/EmptyState";
+import { printAppointmentReceipt } from "@/lib/receipt";
 import toast from "react-hot-toast";
 
 function CustomerDashboardContent() {
@@ -477,10 +478,19 @@ function CustomerDashboardContent() {
                             )}
 
                             {isPaid && (
-                              <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                                <span>Payment Complete</span>
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                  <span>Paid</span>
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => printAppointmentReceipt(appt)}
+                                  className="px-2.5 py-1 rounded-xl border border-salon-border text-[11px] font-semibold text-salon-charcoal hover:bg-salon-card transition-colors"
+                                >
+                                  Receipt
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
