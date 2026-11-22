@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { X, Calendar, Clock, MessageSquare, AlertCircle, CheckCircle2 } from "lucide-react";
+import { X, Calendar, Clock, MessageSquare, AlertCircle, CheckCircle2, CreditCard } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/lib/utils";
