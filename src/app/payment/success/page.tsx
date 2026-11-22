@@ -28,8 +28,9 @@ function PaymentSuccessContent() {
     const verifyStatus = async () => {
       try {
         setLoading(true);
-        // Verified backend lookup
-        const res = await api.get(`/api/payments/appointment/${appointmentId}`);
+        // Verified backend lookup with session_id fallback
+        const query = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : "";
+        const res = await api.get(`/api/payments/appointment/${appointmentId}${query}`);
         if (res.data?.success) {
           setPaymentData(res.data.data);
         }
