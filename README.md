@@ -16,12 +16,13 @@ Luxury salon appointment booking web application for **SalonBook — Salon Appoi
   - One-click cancellation for pending reservations.
   - Direct integration with Stripe Checkout for confirmed reservations.
   - Personal profile editor with ImgBB photo upload and phone updates.
+  - Printable official appointment receipts.
 - **Administrative Control Suite**:
   - Real-time revenue aggregation and booking analytics.
   - Service catalog management (CRUD, image upload via ImgBB, active/inactive status toggle).
   - Appointment confirmation and cancellation management with slot conflict safeguards.
   - Customer directory with account blocking/unblocking controls.
-  - Immutable Stripe-verified payment transaction ledger.
+  - Immutable Stripe-verified payment transaction ledger with CSV export.
 - **Verified Payment Handling**:
   - Dedicated `/payment/success` page fetching verified status from backend.
   - Safe `/payment/cancel` page preserving appointment integrity.
@@ -75,6 +76,6 @@ npm start
 
 ## 🔗 Repository & Live Deployment Links
 
-- **Client Repository**: [SalonBook Client Repository](https://github.com/example/salonbook-client)
-- **Server Repository**: [SalonBook Server Repository](https://github.com/example/salonbook-server)
+- **Client Repository**: [SalonBook Client Repository](https://github.com/Rayhan4741/SalonBook)
+- **Server Repository**: [SalonBook Server Repository](https://github.com/Rayhan4741/SalonBook)
 - **Live Deployment Platform**: [SalonBook Live Application](https://salonbook.vercel.app)
